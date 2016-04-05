@@ -11,13 +11,16 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @ratings = params[:ratings] ? params[:ratings].keys : []
     if params[:sort] 
       @movies = Movie.all.order("#{params[:sort]} ASC")
+      @movies = @movies.select {|m| @ratings.include? m.rating} if @ratings
       params[:sort] == 'title' ? @title_class = 'hilite': @date_class = 'hilite'
     else
       @title_class, @date_class = '', ''
-      @movies = Movie.all
+      @movies = @ratings.empty? ? Movie.all : Movie.all.select {|m| @ratings.include? m.rating} 
     end
+    @all_ratings = Movie.distinct.pluck(:rating)
   end
 
   def new
