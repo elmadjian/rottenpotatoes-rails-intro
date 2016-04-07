@@ -16,11 +16,11 @@ class MoviesController < ApplicationController
     session[:sort] = params[:sort] if params[:sort]
     if session[:sort]
       @movies = Movie.all.order("#{session[:sort]} ASC")
-      @movies = @movies.select {|m| @ratings.include? m.rating} if not @ratings.empty?
+      @movies = @movies.select {|m| session[:ratings].include? m.rating} if not session[:ratings].empty?
       session[:sort] == 'title' ? @title_class = 'hilite': @date_class = 'hilite'
     else
       @title_class, @date_class = '', ''
-      @movies = @ratings.empty? ? Movie.all : Movie.all.select {|m| @ratings.include? m.rating} 
+      @movies = @ratings.empty? ? Movie.all : Movie.all.select {|m| session[:ratings].include? m.rating} 
     end
     @all_ratings = Movie.distinct.pluck(:rating)
   end
