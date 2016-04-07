@@ -13,7 +13,7 @@ class MoviesController < ApplicationController
   def index
     session[:ratings] = params[:ratings].keys if params[:ratings]
     session[:sort] = params[:sort] if params[:sort]
-    @ratings = session[:ratings] or []
+    @ratings = session[:ratings] || []
     if session[:sort]
       @movies = Movie.all.order("#{session[:sort]} ASC")
       @movies = @movies.select {|m| @ratings.include? m.rating} if not @ratings.empty?
