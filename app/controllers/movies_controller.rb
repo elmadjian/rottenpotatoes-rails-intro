@@ -11,8 +11,7 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @ratings = params[:ratings] ? params[:ratings].keys : []
-    session[:ratings] = @ratings if params[:ratings]
+    session[:ratings] = params[:ratings] ? params[:ratings].keys : []
     session[:sort] = params[:sort] if params[:sort]
     if session[:sort]
       @movies = Movie.all.order("#{session[:sort]} ASC")
@@ -20,7 +19,7 @@ class MoviesController < ApplicationController
       session[:sort] == 'title' ? @title_class = 'hilite': @date_class = 'hilite'
     else
       @title_class, @date_class = '', ''
-      @movies = @ratings.empty? ? Movie.all : Movie.all.select {|m| session[:ratings].include? m.rating} 
+      @movies = session[:ratings].empty? ? Movie.all : Movie.all.select {|m| session[:ratings].include? m.rating} 
     end
     @all_ratings = Movie.distinct.pluck(:rating)
   end
