@@ -12,10 +12,12 @@ class MoviesController < ApplicationController
 
   def index
     @ratings = params[:ratings] ? params[:ratings].keys : []
-    if params[:sort] 
-      @movies = Movie.all.order("#{params[:sort]} ASC")
-      @movies = @movies.select {|m| @ratings.include? m.rating} if @ratings
-      params[:sort] == 'title' ? @title_class = 'hilite': @date_class = 'hilite'
+    session[:ratings] = @ratings if params[:ratings]
+    session[:sort] = params[:sort] if params[:sort]
+    if session[:sort]
+      @movies = Movie.all.order("#{session[:sort]} ASC")
+      @movies = @movies.select {|m| @ratings.include? m.rating} if not @ratings.empty?
+      session[:sort] == 'title' ? @title_class = 'hilite': @date_class = 'hilite'
     else
       @title_class, @date_class = '', ''
       @movies = @ratings.empty? ? Movie.all : Movie.all.select {|m| @ratings.include? m.rating} 
