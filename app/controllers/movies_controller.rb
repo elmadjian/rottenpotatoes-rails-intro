@@ -15,9 +15,9 @@ class MoviesController < ApplicationController
     session[:sort] = params[:sort] if params[:sort]
     @ratings = session[:ratings] ? session[:ratings].keys : []
     if params[:ratings] and not params[:sort]
-      redirect_to movies_path(params.merge(:sort => session[:sort])) if session[:sort]
+      redirect_to movies_path(:sort => session[:sort], :ratings => params[:ratings]) if session[:sort]
     elsif params[:sort] and not params[:ratings]
-      redirect_to movies_path(params.merge(:ratings=>session[:ratings])) if session[:ratings]
+      redirect_to movies_path(:ratings => session[:ratings], :sort => params[:sort]) if session[:ratings]
     end
     if session[:sort]
       @movies = Movie.all.order("#{session[:sort]} ASC")
