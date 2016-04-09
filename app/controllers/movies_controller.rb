@@ -14,10 +14,8 @@ class MoviesController < ApplicationController
     session[:ratings] = params[:ratings] if params[:ratings]
     session[:sort] = params[:sort] if params[:sort]
     @ratings = session[:ratings] ? session[:ratings] : {}
-    if params[:ratings] and not params[:sort]
-      redirect_to movies_path(:sort => session[:sort], :ratings => params[:ratings]) if session[:sort]
-    elsif params[:sort] and not params[:ratings]
-      redirect_to movies_path(:ratings => session[:ratings], :sort => params[:sort]) if session[:ratings]
+    if (session[:ratings] && !params[:ratings]) || (session[:sort] && !params[:sort])
+      redirect_to movies_path(:ratings => session[:ratings], :sort => session[:sort])
     end
     if session[:sort]
       @movies = Movie.all.order("#{session[:sort]} ASC")
