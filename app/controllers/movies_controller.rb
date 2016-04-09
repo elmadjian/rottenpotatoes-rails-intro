@@ -11,9 +11,14 @@ class MoviesController < ApplicationController
   end
 
   def index
-    session[:ratings] = params[:ratings].keys if params[:ratings]
+    session[:ratings] = params[:ratings] if params[:ratings]
     session[:sort] = params[:sort] if params[:sort]
-    @ratings = session[:ratings] || []
+    @ratings = session[:ratings] ? session[:ratings].keys : []
+    if params[:ratings] and not params[:sort]
+      redirect_to movies_path(params.merge(:sort => session[:sort])) if session[:sort]
+    elsif params[:sort] and not params[:ratings]
+      redirect_to movies_path(params.merge(:ratings=>session[:ratings])) if session[:ratings]
+    end
     if session[:sort]
       @movies = Movie.all.order("#{session[:sort]} ASC")
       @movies = @movies.select {|m| @ratings.include? m.rating} if not @ratings.empty?
