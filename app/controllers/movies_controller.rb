@@ -13,17 +13,17 @@ class MoviesController < ApplicationController
   def index
     session[:ratings] = params[:ratings] if params[:ratings]
     session[:sort] = params[:sort] if params[:sort]
-    @ratings = session[:ratings] ? session[:ratings] : {}
+    @ratings = session[:ratings] ? session[:ratings].keys : {}
     if (session[:ratings] && !params[:ratings]) || (session[:sort] && !params[:sort])
       redirect_to movies_path(:ratings => session[:ratings], :sort => session[:sort])
     end
     if session[:sort]
       @movies = Movie.all.order("#{session[:sort]} ASC")
-      @movies = @movies.select {|m| @ratings.keys.include? m.rating} if not @ratings.keys.empty?
+      @movies = @movies.select {|m| @ratings.include? m.rating} if not @ratings.empty?
       session[:sort] == 'title' ? @title_class = 'hilite': @date_class = 'hilite'
     else
       @title_class, @date_class = '', ''
-      @movies = @ratings.keys.empty? ? Movie.all : Movie.all.select {|m| @ratings.keys.include? m.rating} 
+      @movies = @ratings.empty? ? Movie.all : Movie.all.select {|m| @ratings.include? m.rating} 
     end
     @all_ratings = Movie.distinct.pluck(:rating)
   end
